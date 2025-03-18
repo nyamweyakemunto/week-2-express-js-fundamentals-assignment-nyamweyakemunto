@@ -1,27 +1,30 @@
 const Product = require('../models/Product');
 
-// GET all products
+// @desc    Get all products
+// @route   GET /products
 const getProducts = async (req, res) => {
     try {
         const products = await Product.find();
-        res.json(products);
+        res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// GET product by ID
+// @desc    Get product by ID
+// @route   GET /products/:id
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        res.json(product);
+        res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// CREATE a new product
+// @desc    Create a new product
+// @route   POST /products
 const createProduct = async (req, res) => {
     try {
         const newProduct = await Product.create(req.body);
@@ -31,26 +34,34 @@ const createProduct = async (req, res) => {
     }
 };
 
-// UPDATE a product
+// @desc    Update product by ID
+// @route   PUT /products/:id
 const updateProduct = async (req, res) => {
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        res.json(product);
+        res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// DELETE a product
+// @desc    Delete product by ID
+// @route   DELETE /products/:id
 const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        res.json({ message: 'Product deleted' });
+        res.status(200).json({ message: 'Product deleted' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+module.exports = {
+    getProducts,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProduct
+};
