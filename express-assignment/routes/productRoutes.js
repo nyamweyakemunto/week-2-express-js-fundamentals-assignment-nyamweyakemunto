@@ -1,17 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const {
-    getProducts,
-    getProductById,
-    createProduct,
-    updateProduct,
-    deleteProduct
+  getProducts,
+  getProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct
 } = require('../controllers/productController');
 
+// GET all products (with optional minPrice query)
 router.get('/', getProducts);
-router.get('/:id', getProductById);
+
+// GET single product
+router.get('/:id', getProduct);
+
+// POST create new product
 router.post('/', createProduct);
+
+// PUT update product
 router.put('/:id', updateProduct);
+
+// DELETE product
 router.delete('/:id', deleteProduct);
 
 module.exports = router;

@@ -1,24 +1,26 @@
-require('dotenv').config(); // Load environment variables at the top
-
+require('dotenv').config();
 const express = require('express');
-const connectDB = require('./config/db'); // MongoDB connection file
-const logger = require('./middleware/logger');
-
 const app = express();
-const PORT = process.env.PORT || 5000; // Access PORT from .env
+const logger = require('./middleware/logger');
+const errorHandler = require('./middleware/errorHandler');
 
-// Connect to MongoDB
-connectDB();
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
 
 // Middleware
 app.use(express.json());
 app.use(logger);
 
 // Routes
-app.use('/users', require('./routes/userRoutes'));
-app.use('/products', require('./routes/productRoutes'));
+app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
 
-// Start Server
+// Error handling middleware
+app.use(errorHandler);
+
+// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log( 'Server running on port ${PORT}');
+  console.log(`Server running on port ${PORT}`);
 });

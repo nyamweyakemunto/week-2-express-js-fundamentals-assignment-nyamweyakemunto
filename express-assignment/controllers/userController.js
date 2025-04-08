@@ -1,67 +1,76 @@
-const User = require('../models/User');
-
-// @desc    Get all users
-// @route   GET /users
-const getUsers = async (req, res) => {
-    try {
-        const users = await User.find();
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+let users = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  ];
+  
+  // Get all users
+  const getUsers = (req, res) => {
+    res.json(users);
+  };
+  
+  // Get single user
+  const getUser = (req, res) => {
+    const user = users.find(u => u.id === parseInt(req.params.id));
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
     }
-};
-
-// @desc    Get user by ID
-// @route   GET /users/:id
-const getUserById = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+    res.json(user);
+  };
+  
+  // Create user
+  const createUser = (req, res) => {
+    const { name, email } = req.body;
+    if (!name || !email) {
+      const error = new Error('Name and email are required');
+      error.statusCode = 400;
+      throw error;
     }
-};
-
-// @desc    Create a new user
-// @route   POST /users
-const createUser = async (req, res) => {
-    try {
-        const newUser = await User.create(req.body);
-        res.status(201).json(newUser);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid data' });
+    
+    const newUser = {
+      id: users.length + 1,
+      name,
+      email
+    };
+    
+    users.push(newUser);
+    res.status(201).json(newUser);
+  };
+  
+  // Update user
+  const updateUser = (req, res) => {
+    const user = users.find(u => u.id === parseInt(req.params.id));
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
     }
-};
-
-// @desc    Update user by ID
-// @route   PUT /users/:id
-const updateUser = async (req, res) => {
-    try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+    
+    const { name, email } = req.body;
+    if (name) user.name = name;
+    if (email) user.email = email;
+    
+    res.json(user);
+  };
+  
+  // Delete user
+  const deleteUser = (req, res) => {
+    const userIndex = users.findIndex(u => u.id === parseInt(req.params.id));
+    if (userIndex === -1) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
     }
-};
-
-// @desc    Delete user by ID
-// @route   DELETE /users/:id
-const deleteUser = async (req, res) => {
-    try {
-        const user = await User.findByIdAndDelete(req.params.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        res.status(200).json({ message: 'User deleted' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-
-module.exports = {
+    
+    users = users.filter(u => u.id !== parseInt(req.params.id));
+    res.status(204).send();
+  };
+  
+  module.exports = {
     getUsers,
-    getUserById,
+    getUser,
     createUser,
     updateUser,
     deleteUser
-};
+  };
